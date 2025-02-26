@@ -5,7 +5,12 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-  modules: ['@vite-pwa/nuxt'],
+  modules: ['@vite-pwa/nuxt', '@nuxtjs/google-fonts'],
+  googleFonts: {
+    families: {
+      Poppins: true,
+    }
+  },
   vite: {
     plugins: [
       tailwindcss(),

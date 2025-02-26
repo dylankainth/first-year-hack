@@ -31,14 +31,11 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    // Here, you should insert `events` into MongoDB (this part requires a database connection)
-    console.log("Fetched events:", events);
 
-    /* 
+
     return {
-        hello: 'world!!'
-    } 
-    */
+        "Fetched events:": events
+    }
 })
 
 /* go to huzz pick up all kcl events then put it in mongo db, in collection called events
