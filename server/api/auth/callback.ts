@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET!) as unknown as { email: string };
 
         // Set authentication cookie
-        setCookie(event, "auth_token", token, { httpOnly: true, secure: true, path: "/" });
+        setCookie(event, "auth_token", token, {  secure: true, path: "/" });
 
         return { success: true, message: "Logged in!", email: decoded.email };
     } catch (error) {
