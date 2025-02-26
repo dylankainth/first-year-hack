@@ -2,6 +2,12 @@ import * as nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import { defineEventHandler, readBody } from "h3";
 
+import { MongoClient } from 'mongodb';
+
+const uri = process.env.MONGODB_URI || '';
+const client = new MongoClient(uri);
+
+
 export default defineEventHandler(async (event) => {
     const { email } = await readBody(event);
 
@@ -11,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
 
     // Generate a magic link token (expires in 15 minutes)
-    const token = jwt.sign({ email }, process.env.JWT_SECRET!, { expiresIn: "15m" });
+    const token = jwt.sign({ email }, process.env.JWT_SECRET!, { expiresIn: "30d" });
 
     const magicLink = `${process.env.BASE_URL}/auth/callback?token=${token}`;
 
@@ -42,6 +48,28 @@ export default defineEventHandler(async (event) => {
         text: `Click this link to log in: ${magicLink}`,
         html: `<p>Click <a href="${magicLink}">here</a> to log in.</p>`,
     });
+
+    try {
+        await client.connect();
+        const db = client.db('FYH');
+        const collection = db.collection('Users');
+
+        // if the user with email 'email' is not found, create a new user with this email
+        const user = await collection
+            .find({ email })
+            .toArray();
+
+        if (user.length === 0) {
+            await collection.insertOne({ email, events: [] as { eventId: any; image: any }[] });
+        }
+
+
+    } catch (error) {
+        return { success: false, error: (error as any).message };
+    } finally {
+        await client.close();
+    }
+
 
     return { message: "Magic link sent!" };
 });

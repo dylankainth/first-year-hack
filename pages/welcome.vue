@@ -4,8 +4,6 @@
 
         <p class="text-center mt-4">Become an active member of KCL societies.</p>
 
-        <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded">Let's Start</button>
-
         <LoginForm />
     </div>
 
