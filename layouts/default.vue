@@ -2,9 +2,12 @@
     <div class="layout-wrapper">
         <div class="mobile-container">
             <slot />
+
+            <navbar />
         </div>
     </div>
 </template>
+
 
 <style scoped>
 .layout-wrapper {
