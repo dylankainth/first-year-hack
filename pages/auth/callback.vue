@@ -13,6 +13,6 @@ const route = useRoute();
 const { error, pending } = await useFetch(`/api/auth/callback?token=${route.query.token}`);
 
 if (!error.value) {
-    setTimeout(() => navigateTo("/index"), 2000);
+    setTimeout(() => navigateTo("/"), 2000);
 }
 </script>
