@@ -20,19 +20,19 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   pwa: {
     manifest: {
-      name: 'WalkieTalkie',
-      short_name: 'WalkieTalkie',
+      name: 'KingsQuest',
+      short_name: 'KingsQuest',
       start_url: '/',
       display: 'standalone',
       background_color: '#ffffff',
       theme_color: '#ffffff',
-      description: 'Your AI Tour Guide',
+      description: 'KingsQuest, explore societies.',
       lang: 'en',
       icons: [
         {
-          src: '/logo.svg',
-          sizes: '192x192',
-          type: 'image/svg',
+          src: '/icon.png',
+          sizes: '500x500',
+          type: 'image/png',
         },
 
       ]
