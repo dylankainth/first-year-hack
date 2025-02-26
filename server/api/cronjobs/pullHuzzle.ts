@@ -1,6 +1,4 @@
 export default defineEventHandler(async (event) => {
-
-
     // write the code here! 
 
     // use node.js "fetch" to make the requsts to those apis 
@@ -11,6 +9,10 @@ export default defineEventHandler(async (event) => {
     // for each student society get list of all events
     // for each event add it to events collection in mongodb
 
+    // which soc, what event is, when its happening
+    // select right data
+    // return that
+
     // fetch the list of all KCL student societies
     const societiesResponse = await fetch('https://api.huzzle.app/api/v1/student_societies?page=1&per_page=100&university_ids=f21a775f-ea03-45c9-8fac-6607746936a5&verified=true');
     const societiesData = await societiesResponse.json();
@@ -20,22 +22,34 @@ export default defineEventHandler(async (event) => {
     }
 
     let events = [];
+    let societies = [];
 
-    // Loop through each society and fetch its events
     for (const society of societiesData.data) {
         const eventsResponse = await fetch(`https://api.huzzle.app/api/v1/touchpoints?touchpointable_type=Event&creatable_for_ids=${society.id}&with_details=true&sort_by=created_at&sort_order=desc&page=1&per_page=10`);
         const eventsData = await eventsResponse.json();
 
-        if (eventsData.data) {
-            events.push(...eventsData.data);
+        societies.push({
+            name: society.attributes.name,
+            id: society.attributes.id
+        })
+
+        // Extract required fields and push them to the events array
+        if (eventsData?.data) {
+            for (const event of eventsData.data) {
+                events.push({
+                    society: society.attributes.id,
+                    name: event.attributes.title,
+                    date: event.attributes.start_date ?? "N/A",
+                    location: event.attributes.place.data.attributes ?? "Unknown",
+                    description: event.attributes.meta_description
+                });
+            }
         }
+
     }
 
-
-
-    return {
-        "Fetched events:": events
-    }
+    console.log(societies);
+    return events;
 })
 
 /* go to huzz pick up all kcl events then put it in mongo db, in collection called events
