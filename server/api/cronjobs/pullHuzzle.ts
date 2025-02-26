@@ -1,19 +1,10 @@
+import { MongoClient } from 'mongodb';
+
+const uri = process.env.MONGODB_URI || '';
+const client = new MongoClient(uri);
+
 export default defineEventHandler(async (event) => {
-    // write the code here! 
 
-    // use node.js "fetch" to make the requsts to those apis 
-
-    //PLAN
-
-    // get list of all student societies
-    // for each student society get list of all events
-    // for each event add it to events collection in mongodb
-
-    // which soc, what event is, when its happening
-    // select right data
-    // return that
-
-    // fetch the list of all KCL student societies
     const societiesResponse = await fetch('https://api.huzzle.app/api/v1/student_societies?page=1&per_page=100&university_ids=f21a775f-ea03-45c9-8fac-6607746936a5&verified=true');
     const societiesData = await societiesResponse.json();
 
@@ -30,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
         societies.push({
             name: society.attributes.name,
-            id: society.attributes.id
+            _id: society.attributes.id
         })
 
         // Extract required fields and push them to the events array
@@ -38,6 +29,7 @@ export default defineEventHandler(async (event) => {
             for (const event of eventsData.data) {
                 events.push({
                     society: society.attributes.id,
+                    _id: event.attributes.id,
                     name: event.attributes.title,
                     date: event.attributes.start_date ?? "N/A",
                     location: event.attributes.place.data.attributes ?? "Unknown",
@@ -48,8 +40,25 @@ export default defineEventHandler(async (event) => {
 
     }
 
-    console.log(societies);
-    return events;
+
+    try {
+        await client.connect();
+        const db = client.db('FYH');
+        const collection = db.collection('Events');
+
+        // Insert all events into the collection
+        await collection.insertMany(events);
+
+        const collection2 = db.collection('Societies');
+        await collection2.insertMany(societies);
+
+    } catch (error) {
+        return { success: false, error: (error as any).message };
+    } finally {
+        await client.close();
+    }
+
+    return "worker completed";
 })
 
 /* go to huzz pick up all kcl events then put it in mongo db, in collection called events
