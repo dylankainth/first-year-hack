@@ -1,5 +1,6 @@
 <template>
     <div class="layout-wrapper">
+        <NuxtPwaManifest />
         <div class="mobile-container">
             <slot />
 
