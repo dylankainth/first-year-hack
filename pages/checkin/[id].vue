@@ -1,9 +1,18 @@
 <template>
     <div class="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+        <div class="py-4">
+            <NuxtLink :to="'/event/' + this.$route.params.id"
+                class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105">
+                Back
+            </NuxtLink>
+        </div>
+
+
         <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+
+
             <h1 class="text-2xl font-bold text-center mb-6 text-gray-800">Check in</h1>
 
-            {{ email }}
             <div v-if="!imageSrc" class="mb-4">
                 <video ref="video" class="w-full h-64 object-cover rounded-lg"></video>
             </div>
@@ -36,8 +45,6 @@
 </template>
 
 <script>
-import { useCookie } from "#app";
-import decodeJwt from "~/utils/decodeJWT";
 
 export default {
     name: 'CameraPage',
@@ -49,12 +56,6 @@ export default {
             email: null,
         }
     },
-    created() {
-        const token = useCookie("auth_token").value;
-        if (token) {
-            this.email = decodeJwt(token);
-        }
-    },
     mounted() {
         this.startCamera()
     },
@@ -62,6 +63,26 @@ export default {
         this.stopCamera()
     },
     methods: {
+        async submit() {
+
+            const response = await fetch('/api/checkIn', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    eventId: this.$route.params.id,
+                    image: this.base64Image
+                })
+            })
+
+            // if (response.ok) {
+            //     this.$router.push('/event/' + this.$route.params.id)
+            // } else {
+            //     console.error('Error checking in:', response)
+            // }
+
+        },
         async startCamera() {
             try {
                 this.stream = await navigator.mediaDevices.getUserMedia({ video: true })
